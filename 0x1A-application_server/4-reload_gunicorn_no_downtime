@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# restart all gunicorn processes
+
+pkill -HUP gunicorn
