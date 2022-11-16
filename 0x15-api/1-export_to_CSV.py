@@ -1,33 +1,50 @@
 #!/usr/bin/python3
-"""
-Using https://jsonplaceholder.typicode.com
-gathers data from API and exports it to CSV file
-Implemented using recursion
-"""
-import re
-import requests
-import sys
-
-
-API = "https://jsonplaceholder.typicode.com"
-"""REST API url"""
+''' task 1 module'''
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        if re.fullmatch(r'\d+', sys.argv[1]):
-            id = int(sys.argv[1])
-            user_res = requests.get('{}/users/{}'.format(API, id)).json()
-            todos_res = requests.get('{}/todos'.format(API)).json()
-            user_name = user_res.get('username')
-            todos = list(filter(lambda x: x.get('userId') == id, todos_res))
-            with open('{}.csv'.format(id), 'w') as file:
-                for todo in todos:
-                    file.write(
-                        '"{}","{}","{}","{}"\n'.format(
-                            id,
-                            user_name,
-                            todo.get('completed'),
-                            todo.get('title')
-                        )
-                    )
+    import requests
+    from sys import argv
+
+    emp_id = argv[1]
+    file_name = emp_id + '.csv'
+    total_todos = 0
+    done_todos = 0
+    done_todos_titles = []
+
+    res = requests.get(
+                   'https://jsonplaceholder.typicode.com/users/' +
+                   emp_id)
+    emp_name = res.json().get('username', 'user name not found')
+
+    res = requests.get(
+                   'https://jsonplaceholder.typicode.com/users/' +
+                   emp_id + '/todos')
+    emp_todos = res.json()
+
+    with open(file_name, 'w') as csvfile:
+        for todo in emp_todos:
+            total_todos += 1
+            csvfile.write(
+                    '"{}","{}","{}","{}"\n'.format(
+                                            todo.get('userId'),
+                                            emp_name,
+                                            todo.get('completed'),
+                                            todo.get('title')
+                                            ))
+
+        #    if todo.get('completed') is True:
+        #        done_todos += 1
+        #        done_todos_titles.append(todo.get(
+        #                                    'title',
+        #                                    'no title found'
+        #                                    ))
+
+    # print('Employee {} is done with tasks({}/{}):'.format(
+    #                                                emp_name,
+    #                                                done_todos,
+    #                                                total_todos
+    #                                                ))
+
+    # for title in done_todos_titles:
+    #     print('\t ' + title)
